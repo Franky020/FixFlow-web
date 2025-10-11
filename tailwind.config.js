@@ -19,7 +19,6 @@ export default {
                 // Colores Principales
                 'ff-primary': '#F4A300',   // 🟧 Yellow-Orange (Naranja: Botones de acción)
                 'ff-secondary': '#006D77', // 🟦 Teal (Azul Petróleo: Base, Nav, Encabezados)
-                //hola aqui hay algo
                 // Colores Secundarios/Utilidad
                 'ff-white': '#FFFFFF',     // Blanco
                 'ff-dark': '#003F4E',      // Azul Oscuro (Texto principal, títulos)

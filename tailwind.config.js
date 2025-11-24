@@ -14,19 +14,19 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-             // 🎨 PALETA DE COLORES FIXFLOW
+            // 🎨 PALETA DE COLORES FIXFLOW
             colors: {
                 // Colores Principales
-                'ff-primary': '#F4A300',   // 🟧 Yellow-Orange (Naranja: Botones de acción)
+                'ff-primary': '#F4A300',   // 🟧 Yellow-Orange (Naranja: Botones de acción)
                 'ff-secondary': '#006D77', // 🟦 Teal (Azul Petróleo: Base, Nav, Encabezados)
                 // Colores Secundarios/Utilidad
-                'ff-white': '#FFFFFF',     // Blanco
-                'ff-dark': '#003F4E',      // Azul Oscuro (Texto principal, títulos)
-                'ff-bg-light': '#F2F2F2',  // Gris Claro (Fondo de página y tarjetas)
+                'ff-white': '#FFFFFF',     // Blanco
+                'ff-dark': '#003F4E',      // Azul Oscuro (Texto principal, títulos)
+                'ff-bg-light': '#F2F2F2',  // Gris Claro (Fondo de página y tarjetas)
                 
                 // Colores de Estado
-                'ff-success': '#3CB371',   // Verde Éxito (Activo o Resuelto)
-                'ff-error': '#E74C3C',     // Rojo Suave (Inactivo, Cerrado o Error)
+                'ff-success': '#3CB371',   // Verde Éxito (Activo o Resuelto)
+                'ff-error': '#E74C3C',     // Rojo Suave (Inactivo, Cerrado o Error)
             },
             // FIN DE PALETA FIXFLOW
         },

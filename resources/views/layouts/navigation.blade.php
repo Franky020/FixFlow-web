@@ -1,100 +1,162 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegación con Slider Activo</title>
+    <!-- Incluye Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Se asegura que el slider esté inicialmente invisible y que la transición sea suave */
+        #nav-slider {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+            opacity: 0; /* Oculto inicialmente */
+        }
+        /* Clase para simular el enlace activo */
+        .nav-link.active {
+            color: #4f46e5; /* indigo-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-[Inter]">
+
+    <!-- Navegación simulando el Blade y Alpine.js -->
+    <nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="shrink-0 flex items-center">
+                        <!-- Logo/Inicio -->
+                        <a href="#" class="font-bold text-xl text-gray-800">
+                            App Logo
+                        </a>
+                    </div>
+
+                    <!-- Enlaces de navegación de escritorio -->
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex relative" id="navbar-container">
+
+                        <!-- La barra deslizante (Slider) -->
+                        <span id="nav-slider" class="absolute bottom-0 h-0.5 bg-indigo-600"></span>
+
+                        <ul id="navbar-links" class="flex space-x-8">
+                            <li>
+                                <a href="#" data-route="dashboard" class="nav-link inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    Inicio
+                                </a>
+                            </li>
+                            <li>
+                                <!-- Enlace activo por defecto -->
+                                <a href="#" data-route="users.index" class="nav-link active inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-indigo-700 focus:outline-none focus:text-indigo-800 focus:border-indigo-700 transition duration-150 ease-in-out">
+                                    Usuarios
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-route="tickets.index" class="nav-link inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    Tickets
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-route="spare_parts.index" class="nav-link inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    Refacciones
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-route="reports.index" class="nav-link inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                                    Reportes
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </div>
         </div>
+    </nav>
+
+    <!-- Contenedor para el mensaje de estado de la demo -->
+    <div id="status-message" class="max-w-7xl mx-auto mt-4 px-4 sm:px-6 lg:px-8 p-3 text-sm bg-indigo-100 text-indigo-800 rounded-lg">
+        El enlace "Usuarios" es el activo por defecto. Pasa el ratón (hover) sobre otros enlaces para ver el efecto deslizante.
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    <!-- Script para la lógica del slider -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('nav-slider');
+            const linksContainer = document.getElementById('navbar-links');
+            const navLinks = linksContainer ? linksContainer.querySelectorAll('.nav-link') : [];
+            let activeLink = null;
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+            // 1. Encuentra el enlace activo (el que tiene la clase 'active')
+            activeLink = Array.from(navLinks).find(link => link.classList.contains('active'));
+            
+            // 2. Función para posicionar el slider
+            const positionSlider = (targetLink) => {
+                if (!slider || !linksContainer || !targetLink) return;
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+                // Obtenemos las posiciones relativas
+                const containerRect = linksContainer.getBoundingClientRect();
+                const linkRect = targetLink.getBoundingClientRect();
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
+                // Calculamos el desplazamiento a la izquierda dentro del contenedor
+                const offsetLeft = linkRect.left - containerRect.left;
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-    </div>
-</nav>
+                // Aplicamos el ancho y la posición
+                slider.style.width = `${linkRect.width}px`;
+                slider.style.transform = `translateX(${offsetLeft}px)`;
+                
+                // Hacemos visible el slider
+                slider.classList.remove('opacity-0');
+                slider.classList.add('opacity-100');
+            };
+
+            // Inicializa la posición al cargar la página
+            if (activeLink) {
+                positionSlider(activeLink);
+            }
+
+            // 3. Añadir escuchadores de eventos
+            navLinks.forEach(link => {
+                // Efecto al pasar el ratón (Hover)
+                link.addEventListener('mouseenter', (e) => {
+                    positionSlider(e.currentTarget);
+                });
+
+                // Efecto al salir del enlace: vuelve al enlace activo original
+                link.addEventListener('mouseleave', () => {
+                    if (activeLink) {
+                        positionSlider(activeLink);
+                    } else {
+                         // Si no hay enlace activo, esconde el slider
+                        slider.style.width = '0px';
+                        slider.style.transform = `translateX(0px)`;
+                        slider.classList.remove('opacity-100');
+                        slider.classList.add('opacity-0');
+                    }
+                });
+
+                // Simulación de clic para cambiar el enlace activo
+                link.addEventListener('click', (e) => {
+                    // Quitamos la clase 'active' y el estilo de todos los enlaces
+                    navLinks.forEach(l => {
+                        l.classList.remove('active', 'text-indigo-700', 'border-indigo-400');
+                        l.classList.add('text-gray-500', 'border-transparent');
+                    });
+                    
+                    // Marcamos el nuevo enlace como activo
+                    e.currentTarget.classList.add('active', 'text-indigo-700', 'border-indigo-400');
+                    e.currentTarget.classList.remove('text-gray-500', 'border-transparent');
+                    
+                    activeLink = e.currentTarget;
+                    positionSlider(activeLink);
+
+                    // Actualizar el mensaje de estado
+                    document.getElementById('status-message').innerHTML = `El enlace **"${e.currentTarget.innerText}"** es el nuevo enlace activo.`;
+
+                    e.preventDefault(); // Previene la navegación real en la demo
+                });
+            });
+        });
+    </script>
+</body>
+</html>

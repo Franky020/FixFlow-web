@@ -40,6 +40,20 @@ COPY . /var/www/html
 # Usamos --no-dev para instalar solo las dependencias de producción y reducir el tamaño.
 RUN composer install --no-dev --optimize-autoloader
 
+# ... (Después de instalar Composer) ...
+
+# 1. Instalar Node.js y npm (si aún no lo tienes)
+# Necesitas Node.js para compilar Vite. Agrega esto al bloque de instalación inicial:
+# RUN apt-get install -y nodejs npm
+
+# 2. Instalar dependencias de frontend
+RUN npm install
+
+# 3. Compilar assets para producción
+RUN npm run build
+# Esto crea la carpeta public/build y el manifest.json
+
+# ... (Continúa con composer install, config:cache, chown, etc.) ...
 # Generar la clave de la aplicación (esto debe hacerse antes de que se ejecute la aplicación)
 # Nota: En producción, la clave APP_KEY debe ser una variable de entorno de Render.
 # Sin embargo, para fines de construcción, puedes generar el archivo de caché.

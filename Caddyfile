@@ -1,11 +1,15 @@
-fixflow-web-47p1.onrender.com  {
+:80 {
     # Raíz del sitio (apunta a la carpeta public de Laravel)
     root * /var/www/html/public
 
     # Habilitar manejo de archivos estáticos
     file_server
 
-    # Manejar todas las solicitudes a index.php para Laravel
-    # (y pasar a PHP-FPM en el puerto 9000 dentro del mismo contenedor)
+    # Conexión a PHP-FPM a través del puerto 9000 (CORRECTO)
     php_fastcgi 127.0.0.1:9000
+
+    # Opcional pero útil para depuración
+    # log {
+    #     output stdout
+    # }
 }

@@ -61,6 +61,7 @@ RUN chown -R laravel:laravel /var/www/html
 RUN chmod -R 775 /var/www/html/storage
 RUN chmod -R 775 /var/www/html/bootstrap/cache
 
+RUN php artisan config:cache
 # Exponer el puerto del servidor web (Caddy)
 EXPOSE 80
 

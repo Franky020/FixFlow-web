@@ -13,6 +13,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev
 
+# Instalar Caddy (servidor web)
+RUN curl -sL "https://github.com/caddyserver/caddy/releases/download/v2.6.4/caddy_2.6.4_linux_amd64.tar.gz" | tar xz \
+    && mv caddy /usr/bin/caddy
+
+# Copiar configuración de Caddy
+COPY Caddyfile /etc/caddy/Caddyfile
+# ... (Resto de la instalación, Composer, etc., es igual) ...
+
 # Limpiar los paquetes descargados para reducir el tamaño final de la imagen
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -45,10 +53,10 @@ RUN chmod -R 775 /var/www/html/storage
 RUN chmod -R 775 /var/www/html/bootstrap/cache
 
 # Exponer el puerto de PHP-FPM (el puerto por donde escuchará)
-EXPOSE 9000
+EXPOSE 80
 
 # Cambiar al usuario no-root para ejecutar la aplicación (seguridad)
 USER laravel
 
 # Comando principal para iniciar el contenedor
-CMD ["php-fpm"]
+CMD ["/usr/bin/caddy", "run", "--config", "/etc/caddy/Caddyfile", "&", "php-fpm"]

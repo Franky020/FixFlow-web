@@ -1,0 +1,11 @@
+:80 {
+    # Raíz del sitio (apunta a la carpeta public de Laravel)
+    root * /var/www/html/public
+
+    # Habilitar manejo de archivos estáticos
+    file_server
+
+    # Manejar todas las solicitudes a index.php para Laravel
+    # (y pasar a PHP-FPM en el puerto 9000 dentro del mismo contenedor)
+    php_fastcgi unix//run/php/php8.2-fpm.sock
+}

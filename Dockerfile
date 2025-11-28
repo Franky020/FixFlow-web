@@ -58,5 +58,5 @@ EXPOSE 80
 # Cambiar al usuario no-root para ejecutar la aplicación (seguridad)
 USER laravel
 
-# Comando principal para iniciar el contenedor
-CMD ["/usr/bin/caddy", "run", "--config", "/etc/caddy/Caddyfile", "&", "php-fpm"]
+# Usa un script de shell para asegurar que ambos procesos corran y permanezcan vivos
+CMD sh -c "/usr/bin/caddy run --config /etc/caddy/Caddyfile & php-fpm -F"

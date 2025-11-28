@@ -1,76 +1,71 @@
-# Usa una imagen base de PHP con FPM (FastCGI Process Manager)
-# FPM es el procesador de PHP al que se conectará tu servidor web (Nginx o Caddy).
+# Usa una imagen base de PHP con FPM
 FROM php:8.2-fpm
 
-# Instalar dependencias del sistema operativo (para Git, zip, y extensiones de PHP)
-RUN apt-get update && apt-get install -y \
+# -------------------------------------------------------------
+# 1. INSTALACIÓN DE DEPENDENCIAS DEL SISTEMA (TODO EN UN BLOQUE)
+# -------------------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
-    libzip-dev
+    # --- INSTALACIÓN DE NODE.JS ---
+    && curl -sL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    # --- INSTALAR CADDY ---
+    && curl -sL "https://github.com/caddyserver/caddy/releases/download/v2.6.4/caddy_2.6.4_linux_amd64.tar.gz" | tar xz \
+    && mv caddy /usr/bin/caddy \
+    # --- LIMPIEZA FINAL DE APT ---
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar Caddy (servidor web)
-RUN curl -sL "https://github.com/caddyserver/caddy/releases/download/v2.6.4/caddy_2.6.4_linux_amd64.tar.gz" | tar xz \
-    && mv caddy /usr/bin/caddy
-
-# Copiar configuración de Caddy
-COPY Caddyfile /etc/caddy/Caddyfile
-# ... (Resto de la instalación, Composer, etc., es igual) ...
-
-# Limpiar los paquetes descargados para reducir el tamaño final de la imagen
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Instalar extensiones de PHP requeridas por Laravel y muchas aplicaciones
+# Instalar extensiones de PHP requeridas por Laravel
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Instalar Composer (el gestor de dependencias de PHP)
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configurar el directorio de trabajo dentro del contenedor
+# Configurar el directorio de trabajo y copiar el código
 WORKDIR /var/www/html
-
-# Copiar el código fuente del proyecto a la imagen
 COPY . /var/www/html
 
-# Instalar las dependencias de Laravel
-# Usamos --no-dev para instalar solo las dependencias de producción y reducir el tamaño.
+# Copiar la configuración de Caddy
+COPY Caddyfile /etc/caddy/Caddyfile
+
+# -------------------------------------------------------------
+# 2. INSTALACIÓN DE DEPENDENCIAS DEL PROYECTO
+# -------------------------------------------------------------
+
+# Instalar dependencias de Composer (Backend)
 RUN composer install --no-dev --optimize-autoloader
 
-# ... (Después de instalar Composer) ...
-
-# 1. Instalar Node.js y npm (si aún no lo tienes)
-# Necesitas Node.js para compilar Vite. Agrega esto al bloque de instalación inicial:
-# RUN apt-get install -y nodejs npm
-
-# 2. Instalar dependencias de frontend
+# Instalar dependencias de Frontend (NPM)
 RUN npm install
 
-# 3. Compilar assets para producción
+# Compilar assets para producción (Vite)
 RUN npm run build
-# Esto crea la carpeta public/build y el manifest.json
 
-# ... (Continúa con composer install, config:cache, chown, etc.) ...
-# Generar la clave de la aplicación (esto debe hacerse antes de que se ejecute la aplicación)
-# Nota: En producción, la clave APP_KEY debe ser una variable de entorno de Render.
-# Sin embargo, para fines de construcción, puedes generar el archivo de caché.
+# Generar la clave y cachear la configuración de Laravel
 RUN php artisan config:cache
 
-# Configuración de Permisos
-# Crear un usuario no-root por seguridad. Laravel necesita permisos para la carpeta storage
+# -------------------------------------------------------------
+# 3. CONFIGURACIÓN FINAL Y ARRANQUE
+# -------------------------------------------------------------
+
+# Configuración de Permisos y Usuario
 RUN useradd -ms /bin/bash laravel
 RUN chown -R laravel:laravel /var/www/html
 RUN chmod -R 775 /var/www/html/storage
 RUN chmod -R 775 /var/www/html/bootstrap/cache
 
-# Exponer el puerto de PHP-FPM (el puerto por donde escuchará)
+# Exponer el puerto del servidor web (Caddy)
 EXPOSE 80
 
-# Cambiar al usuario no-root para ejecutar la aplicación (seguridad)
+# Cambiar al usuario no-root por seguridad
 USER laravel
 
-# Usa un script de shell para asegurar que ambos procesos corran y permanezcan vivos
+# CMD para iniciar Caddy y PHP-FPM simultáneamente (usando -F para FPM)
 CMD sh -c "/usr/bin/caddy run --config /etc/caddy/Caddyfile & php-fpm -F"
